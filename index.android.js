@@ -16,100 +16,86 @@ import {
     Button,
     Alert,
     ScrollView,
-    Navigator,
-    TouchableOpacity
+    TouchableOpacity,
+    Navigator
 } from 'react-native';
+import NavigationBar from 'react-native-navbar';
 
 const onButtonPress = () => { Alert.alert('Button has been pressed!'); };
 
 class LoginScreen extends Component {
     render() {
         return (
-            <View style={styles.loginContent}>
-                <Text style={styles.fieldLabel}>Username</Text>
-                <TextInput style={styles.textBox}/>
-                <Text style={styles.fieldLabel}>Password</Text>
-                <TextInput style={styles.textBox}/>
-                <Button onPress={() => {
-                        this.props.navigator.push({title:'Edit Query Screen'})
-                    }} title='Login' accessibilityLabel='Login'/>
+            <View style={styles.container}>
+                <NavigationBar
+                    style={styles.titleBar}
+                    title={{title: 'Sign In'}}/>
+                <View style={styles.loginContent}>
+                    <Text style={styles.fieldLabel}>Username</Text>
+                    <TextInput style={styles.textBox}/>
+                    <Text style={styles.fieldLabel}>Password</Text>
+                    <TextInput style={styles.textBox}/>
+                    <Button onPress={() => {
+                            this.props.navigator.push({component: EditQueryScreen})
+                        }} title='Login' accessibilityLabel='Login'/>
+                </View>
             </View>
         );
     }
 }
 
 class EditQueryScreen extends Component {
-    render() {
-        return (
-            <ScrollView style={styles.listContent}>
-                <Text style={styles.fieldLabel}>Text</Text>
-                <TextInput style={styles.textBox}/>
-                <Text style={styles.fieldLabel}>Time</Text>
-                <TextInput style={styles.textBox}/>
-                <Text style={styles.fieldLabel}>Location</Text>
-                <TextInput style={styles.textBox}/>
-                <Text style={styles.fieldLabel}>Sorting</Text>
-                <TextInput style={styles.textBox}/>
-            </ScrollView>
-        );
-    }
-}
-
-var NavigationBarRouteMapper = {
-    LeftButton: function(route, navigator, index, navState) {
-        if (index === 0) {
-            return null;
-        }
-
-        var previousRoute = navState.routeStack[index - 1];
+    rmb(route, navigator, index, navState) {
         return (
             <TouchableOpacity
-                onPress={() => navigator.pop()}>
-                <Text>
-                    Back
-                </Text>
-            </TouchableOpacity>
-        );
-    },
-
-    RightButton: function(route, navigator, index, navState) {
-        return (
-            <TouchableOpacity
-                onPress={() => navigator.push({title:'lol'})}>
+                onPress={() => navigator.push({title:'lol', component: null})}>
                 <Text>
                     Next
                 </Text>
             </TouchableOpacity>
         );
-    },
+    }
 
-    Title: function(route, navigator, index, navState) {
+    render() {
+        const leftButtonConfig = {
+            title: 'Back',
+            handler: () => this.props.navigator.pop()
+            //handler: () => this.props.navigator.push({
+            //    component: EditQueryScreen
+            //})
+        }
+
         return (
-            <Text>
-                {route.title}
-            </Text>
+            <View style={styles.container}>
+                <NavigationBar
+                    style={styles.titleBar}
+                    title={{title: 'Edit Query'}}
+                    leftButton={leftButtonConfig}/>
+                <ScrollView style={styles.listContent}>
+                    <Text style={styles.fieldLabel}>Text</Text>
+                    <TextInput style={styles.textBox}/>
+                    <Text style={styles.fieldLabel}>Time</Text>
+                    <TextInput style={styles.textBox}/>
+                    <Text style={styles.fieldLabel}>Location</Text>
+                    <TextInput style={styles.textBox}/>
+                    <Text style={styles.fieldLabel}>Sorting</Text>
+                    <TextInput style={styles.textBox}/>
+                </ScrollView>
+            </View>
         );
     }
 }
 
 var AwesomeProject = React.createClass({
+    renderScene(route, navigator) {
+        return <route.component route={route} navigator={navigator} />;
+    },
+
     render() {
         return (
             <Navigator
-                initialRoute = {{title: 'Sign In'}}
-                navigationBar = {<Navigator.NavigationBar routeMapper={NavigationBarRouteMapper}/>}
-                renderScene = {(route, navigator) => {
-                    if (route.title === 'Sign In') {
-                        return (<LoginScreen navigator={navigator}/>)
-                    }
-                    else if (route.title === 'Edit Query Screen') {
-                        return (<EditQueryScreen navigator={navigator}/>)
-                    }
-                    else {
-                        return (null)
-                    }
-                }}
-            />
+                initialRoute={{component: LoginScreen}}
+                renderScene={this.renderScene} />
         );
     }
 })
@@ -117,22 +103,15 @@ var AwesomeProject = React.createClass({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'flex-start',
         backgroundColor: '#F0F0F2'
     },
     titleBar: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        flexDirection: 'row',
         paddingBottom: 4,
         paddingTop: 4,
         borderBottomWidth: 0.5,
         borderBottomColor: '#BCBCBC',
         backgroundColor: '#F8F8F8',
-        marginBottom: 3,
-        alignSelf: 'stretch'
     },
     titleBarText: {
         color: '#161616',
