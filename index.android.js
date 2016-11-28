@@ -45,24 +45,17 @@ class LoginScreen extends Component {
 }
 
 class EditQueryScreen extends Component {
-    rmb(route, navigator, index, navState) {
-        return (
-            <TouchableOpacity
-                onPress={() => navigator.push({title:'lol', component: null})}>
-                <Text>
-                    Next
-                </Text>
-            </TouchableOpacity>
-        );
-    }
-
     render() {
         const leftButtonConfig = {
             title: 'Back',
             handler: () => this.props.navigator.pop()
-            //handler: () => this.props.navigator.push({
-            //    component: EditQueryScreen
-            //})
+        }
+
+        const rightButtonConfig = {
+            title: 'Run',
+            handler: () => this.props.navigator.push({
+               component: QueryResultsScreen
+            })
         }
 
         return (
@@ -70,7 +63,8 @@ class EditQueryScreen extends Component {
                 <NavigationBar
                     style={styles.titleBar}
                     title={{title: 'Edit Query'}}
-                    leftButton={leftButtonConfig}/>
+                    leftButton={leftButtonConfig}
+                    rightButton={rightButtonConfig}/>
                 <ScrollView style={styles.listContent}>
                     <Text style={styles.fieldLabel}>Text</Text>
                     <TextInput style={styles.textBox}/>
@@ -81,6 +75,38 @@ class EditQueryScreen extends Component {
                     <Text style={styles.fieldLabel}>Sorting</Text>
                     <TextInput style={styles.textBox}/>
                 </ScrollView>
+            </View>
+        );
+    }
+}
+
+class QueryResultsScreen extends Component {
+    render() {
+        const leftButtonConfig = {
+            title: 'Back',
+            handler: () => this.props.navigator.pop()
+        }
+
+        const listData = [
+            {label:'Burrito Shack'},
+            {label:'Los Favoritos'},
+            {label:'More Burritos'},
+            {label:'Artesian Organic Burritos'},
+        ]
+
+        const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2})
+        const dataSource = ds.cloneWithRows(listData)
+
+        return (
+            <View style={styles.container}>
+                <NavigationBar
+                    style={styles.titleBar}
+                    title={{title: 'Edit Query'}}
+                    leftButton={leftButtonConfig}/>
+                <ListView
+                    style={styles.listContent}
+                    dataSource={dataSource}
+                    renderRow={(rowData) => <Text>{rowData.label}</Text>}/>
             </View>
         );
     }
